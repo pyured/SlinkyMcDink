@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class InputReader : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public Vector2 input; 
     void Start()
     {
-        
+        input = new Vector2();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        input.x = Input.GetAxis("Horizontal");
+        input.y = Input.GetAxis("Vertical");
     }
 }
