@@ -5,14 +5,16 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     public static Vector2 movementInput;
-    public static ButtonPress jumpButton;
-    public static ButtonPress rollButton;
+    public static Dictionary<string, ButtonPress> buttonMap;
 
     void Start()
     {
         movementInput = new Vector2();
-        jumpButton = new ButtonPress("Jump");
-        rollButton = new ButtonPress("Roll");
+        buttonMap = new Dictionary<string, ButtonPress>
+        {
+            {"Jump", new ButtonPress("Jump")},
+            {"Roll", new ButtonPress("Roll")}
+        };
     }
 
     void Update()
@@ -20,8 +22,10 @@ public class InputManager : MonoBehaviour
         movementInput.x = Input.GetAxis("Horizontal");
         movementInput.y = Input.GetAxis("Vertical");
 
-        jumpButton.Update();
-        rollButton.Update();
+        foreach (string key in buttonMap.Keys)
+        {
+            buttonMap[key].Update();
+        }
     }
 }
 
@@ -38,6 +42,8 @@ public class ButtonPress
     private bool buttonReleasedThisFrame;
     /** The length that the button was held, in seconds */
     private float lengthOfPress;
+    /** The time since the button was last released, in seconds */
+    private float timeSinceLastPress;
 
     /**
     Creates a button press object
@@ -57,6 +63,11 @@ public class ButtonPress
         if (buttonActive)
         {
             lengthOfPress += Time.deltaTime;
+            timeSinceLastPress = 0;
+        }
+        else
+        {
+            timeSinceLastPress += Time.deltaTime;
         }
 
         buttonPressedThisFrame = Input.GetButtonDown(buttonName);
@@ -91,5 +102,11 @@ public class ButtonPress
     public float GetLengthOfPress()
     {
         return lengthOfPress;
+    }
+
+    /** Returns how long its been since the button was last released. Resets every new button press */
+    public float GetTimeSinceLastPress()
+    {
+        return timeSinceLastPress;
     }
 }

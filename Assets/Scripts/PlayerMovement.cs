@@ -22,17 +22,17 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (InputManager.jumpButton.PressedThisFrame() && IsGrounded())
+        if (InputManager.buttonMap["Jump"].PressedThisFrame() && IsGrounded())
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
 
-        Debug.Log(InputManager.rollButton.Active());
+        Debug.Log(InputManager.buttonMap["Roll"].Active());
     }
 
     void FixedUpdate()
     {
-        rb.velocity = new Vector3(Input.GetAxis("Horizontal") * moveSpeed, rb.velocity.y, Input.GetAxis("Vertical") * moveSpeed);
+        rb.velocity = new Vector3(InputManager.movementInput.x * moveSpeed, rb.velocity.y, InputManager.movementInput.y * moveSpeed);
         PlayerGravity();
     }
 
