@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     private float coyoteTime;
     private bool jumped;
 
+    [SerializeField] private GameObject blobShadow;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -45,7 +47,9 @@ public class PlayerMovement : MonoBehaviour
             jumped = true;
         }
 
-        Debug.Log(coyoteTime);
+        UpdateBlobShadow();
+
+        //Debug.Log(coyoteTime);
     }
 
     void FixedUpdate()
@@ -69,6 +73,23 @@ public class PlayerMovement : MonoBehaviour
         if (!IsGrounded())
         {
             rb.AddForce(Vector3.down * gravityScale);
+        }
+    }
+
+    // TODO: Have this update to ground rotation
+    void UpdateBlobShadow()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 100f))
+        {
+            blobShadow.SetActive(true);
+            blobShadow.transform.position = hit.point + Vector3.up * 0.05f;
+            //blobShadow.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal );
+        }
+        else
+        {
+            blobShadow.SetActive(false);
+            blobShadow.transform.position = transform.position + Vector3.down * 3f;
         }
     }
 }
