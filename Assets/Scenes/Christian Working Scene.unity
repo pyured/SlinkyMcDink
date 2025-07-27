@@ -248,6 +248,7 @@ MonoBehaviour:
   groundedRayHeight: 1.13
   playerManager: {fileID: 0}
   gravityScale: 40
+  maxCoyoteTime: 0.12
 --- !u!54 &114652654
 Rigidbody:
   m_ObjectHideFlags: 0

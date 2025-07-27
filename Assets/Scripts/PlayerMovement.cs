@@ -15,6 +15,10 @@ public class PlayerMovement : MonoBehaviour
     public PlayerManager playerManager;
     [SerializeField] float gravityScale;
 
+    [SerializeField] private float maxCoyoteTime;
+    private float coyoteTime;
+    private bool jumped;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -22,12 +26,26 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (InputManager.buttonMap["Jump"].PressedThisFrame() && IsGrounded())
+        if (IsGrounded())
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            coyoteTime = 0;
+            if (rb.velocity.y < 0)
+            {
+                jumped = false;
+            }
+        }
+        else
+        {
+            coyoteTime += Time.deltaTime;
         }
 
-        Debug.Log(InputManager.buttonMap["Roll"].Active());
+        if (InputManager.buttonMap["Jump"].PressedThisFrame() && (IsGrounded() || (coyoteTime <= maxCoyoteTime && !jumped)))
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            jumped = true;
+        }
+
+        Debug.Log(coyoteTime);
     }
 
     void FixedUpdate()
