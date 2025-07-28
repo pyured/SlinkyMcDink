@@ -5,11 +5,13 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     public static Vector2 movementInput;
+    public static Vector2 cameraInput;
     public static Dictionary<string, ButtonPress> buttonMap;
 
     void Start()
     {
         movementInput = new Vector2();
+        cameraInput = new Vector2();
         buttonMap = new Dictionary<string, ButtonPress>
         {
             {"Jump", new ButtonPress("Jump")},
@@ -21,6 +23,9 @@ public class InputManager : MonoBehaviour
     {
         movementInput.x = Input.GetAxis("Horizontal");
         movementInput.y = Input.GetAxis("Vertical");
+
+        cameraInput.x = Input.GetAxis("HorizontalCam");
+        cameraInput.y = Input.GetAxis("VerticalCam");
 
         foreach (string key in buttonMap.Keys)
         {

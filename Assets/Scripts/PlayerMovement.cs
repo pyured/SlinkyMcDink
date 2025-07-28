@@ -5,20 +5,27 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public Physics physics;
+    //public Physics physics;
     /** The speed the player moves at */
     public float moveSpeed;
     /** The force that the player jumps with */
     public float jumpForce;
+    /** A reference to the player rigidbody */
     private Rigidbody rb;
+    /** The height of the grounded raycast */
     [SerializeField] private float groundedRayHeight;
-    public PlayerManager playerManager;
+    //public PlayerManager playerManager;
+    /** The force of gravity to be applied to the player */
     [SerializeField] float gravityScale;
 
+    /** The amount of coyote time that the player has */
     [SerializeField] private float maxCoyoteTime;
+    /** The time since the player last left the ground */
     private float coyoteTime;
+    /** Whether the player has jumped since they last left the ground */
     private bool jumped;
 
+    /** A reference to the player's blob shadow */
     [SerializeField] private GameObject blobShadow;
 
     void Start()
@@ -49,7 +56,8 @@ public class PlayerMovement : MonoBehaviour
 
         UpdateBlobShadow();
 
-        //Debug.Log(coyoteTime);
+        // FOR JEREMY TO USE
+        Debug.Log(InputManager.cameraInput);
     }
 
     void FixedUpdate()
