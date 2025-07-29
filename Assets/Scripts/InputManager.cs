@@ -21,11 +21,11 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        movementInput.x = Input.GetAxis("Horizontal");
-        movementInput.y = Input.GetAxis("Vertical");
+        movementInput.x = Input.GetAxisRaw("Horizontal");
+        movementInput.y = Input.GetAxisRaw("Vertical");
 
-        cameraInput.x = Input.GetAxis("HorizontalCam");
-        cameraInput.y = Input.GetAxis("VerticalCam");
+        cameraInput.x = Input.GetAxisRaw("HorizontalCam");
+        cameraInput.y = Input.GetAxisRaw("VerticalCam");
 
         foreach (string key in buttonMap.Keys)
         {
