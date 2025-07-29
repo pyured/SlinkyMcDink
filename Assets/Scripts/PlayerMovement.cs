@@ -15,8 +15,6 @@ public class PlayerMovement : MonoBehaviour
     /** The height of the grounded raycast */
     [SerializeField] private float groundedRayHeight;
     //public PlayerManager playerManager;
-    /** The force of gravity to be applied to the player */
-    [SerializeField] float gravityScale;
 
     /** The amount of coyote time that the player has */
     [SerializeField] private float maxCoyoteTime;
@@ -27,6 +25,18 @@ public class PlayerMovement : MonoBehaviour
 
     /** A reference to the player's blob shadow */
     [SerializeField] private GameObject blobShadow;
+
+    #region Terrain / Platform Gravity Settings
+    public bool tubeGravity;
+    public GameObject currentTerrain;
+    public float rotationSpeed;
+    /** The force of gravity to be applied to the player */
+    [SerializeField] float gravityScale;
+    public Vector3 planetDir;
+    public Vector3 normalDir;
+
+    #endregion
+
 
     void Start()
     {
@@ -50,37 +60,70 @@ public class PlayerMovement : MonoBehaviour
 
         if (InputManager.buttonMap["Jump"].PressedThisFrame() && (IsGrounded() || (coyoteTime <= maxCoyoteTime && !jumped)))
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
             jumped = true;
         }
 
         UpdateBlobShadow();
 
+        if (tubeGravity)
+        {
+            //SurfaceAlignment();
+            Vector3 up = -GetGravityVector().normalized;
+            Vector3 forward = Vector3.ProjectOnPlane(transform.forward, GetGravityVector().normalized).normalized;
+
+            Quaternion targetRotation = Quaternion.LookRotation(forward, up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+        }
+
         // FOR JEREMY TO USE
-        Debug.Log(InputManager.cameraInput);
+        //Debug.Log(InputManager.cameraInput);
+        Debug.Log(GetGravityVector());
     }
 
     void FixedUpdate()
     {
-        rb.velocity = new Vector3(InputManager.movementInput.x * moveSpeed, rb.velocity.y, InputManager.movementInput.y * moveSpeed);
+        if (tubeGravity)
+        {
+
+            Vector3 forwardMovement = currentTerrain.GetComponent<MainTerrain>().lineOfGravity.normalized;
+            Vector3 tangentMovement = Vector3.Cross(-GetGravityVector(), forwardMovement).normalized;
+            Vector3 moveDir = (forwardMovement * InputManager.movementInput.y + tangentMovement * InputManager.movementInput.x).normalized;
+            rb.velocity = moveDir * moveSpeed + Vector3.Project(rb.velocity, GetGravityVector());
+
+        }
+        else
+        {
+            rb.velocity = new Vector3(InputManager.movementInput.x * moveSpeed, rb.velocity.y, InputManager.movementInput.y * moveSpeed);
+        }
         PlayerGravity();
     }
 
     void OnDrawGizmos()
     {
-        Gizmos.DrawRay(transform.position, Vector3.down * groundedRayHeight);
+        Gizmos.DrawRay(transform.position, -transform.up * groundedRayHeight);
+        if (tubeGravity)
+        {
+            Gizmos.DrawRay(transform.position, GetGravityVector());
+        }
+
     }
 
     public bool IsGrounded()
     {
-        return Physics.Raycast(rb.transform.position, Vector3.down, groundedRayHeight, LayerMask.GetMask("Ground"));
+        return Physics.Raycast(rb.transform.position, -transform.up, groundedRayHeight, LayerMask.GetMask("Ground"));
     }
 
     void PlayerGravity()
     {
-        if (!IsGrounded())
+        if (tubeGravity)
         {
-            rb.AddForce(Vector3.down * gravityScale);
+            rb.AddForce(GetGravityVector().normalized * gravityScale, ForceMode.Acceleration);
+        }
+        else
+        {
+            rb.AddForce(Vector3.down * gravityScale, ForceMode.Acceleration);
         }
     }
 
@@ -98,6 +141,33 @@ public class PlayerMovement : MonoBehaviour
         {
             blobShadow.SetActive(false);
             blobShadow.transform.position = transform.position + Vector3.down * 3f;
+        }
+    }
+    private IEnumerator CoyoteTimer()
+    {
+        while (coyoteTime < maxCoyoteTime && !IsGrounded())
+        {
+            yield return null;
+            coyoteTime += Time.deltaTime;
+        }
+    }
+    private Vector3 GetGravityVector()
+    {
+        Vector3 playerToOrigin = transform.position - currentTerrain.transform.position;
+        Vector3 lineOfGravity = currentTerrain.GetComponent<MainTerrain>().lineOfGravity;
+        Vector3 pointOfGravity = Vector3.Project(playerToOrigin, lineOfGravity) + currentTerrain.transform.position;
+
+        Vector3 forceOfGravity = (pointOfGravity - transform.position);
+        return forceOfGravity;
+    }
+    private void SurfaceAlignment()
+    {
+        RaycastHit hit = Physics.RaycastAll(transform.position, GetGravityVector(), GetGravityVector().magnitude)[0];
+        if (hit.collider != null)
+        {
+            Vector3 normal = hit.normal;
+            //float angle = Mathf.Atan2(normal.y, normal.x) * Mathf.Rad2Deg - 90f;
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(normal), Time.deltaTime * rotationSpeed);
         }
     }
 }
