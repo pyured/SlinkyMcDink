@@ -22,6 +22,8 @@ public class PlayerMovement : MonoBehaviour
     private float coyoteTime;
     /** Whether the player has jumped since they last left the ground */
     private bool jumped;
+    /* This variable is just used to create a delay between jumps to avoid IDJs which messes with player jump height*/
+    private bool recentlyJumped;
 
     /** A reference to the player's blob shadow */
     [SerializeField] private GameObject blobShadow;
@@ -58,27 +60,24 @@ public class PlayerMovement : MonoBehaviour
             coyoteTime += Time.deltaTime;
         }
 
-        if (InputManager.buttonMap["Jump"].PressedThisFrame() && (IsGrounded() || (coyoteTime <= maxCoyoteTime && !jumped)))
+        if (InputManager.buttonMap["Jump"].PressedThisFrame() && (IsGrounded() || (coyoteTime <= maxCoyoteTime && !jumped)) && !recentlyJumped)
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-            jumped = true;
+            // rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            // rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            // jumped = true;
+
+            StartCoroutine(Jump());
         }
 
         UpdateBlobShadow();
 
         if (tubeGravity)
         {
-            //SurfaceAlignment();
-            Vector3 up = -GetGravityVector().normalized;
-            Vector3 forward = Vector3.ProjectOnPlane(transform.forward, GetGravityVector().normalized).normalized;
-
-            Quaternion targetRotation = Quaternion.LookRotation(forward, up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+            SurfaceAlignment();
         }
 
         // FOR JEREMY TO USE
-        //Debug.Log(InputManager.cameraInput);
+        Debug.Log(InputManager.cameraInput);
         Debug.Log(GetGravityVector());
     }
 
@@ -131,16 +130,16 @@ public class PlayerMovement : MonoBehaviour
     void UpdateBlobShadow()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, 100f))
+        if (Physics.Raycast(transform.position, -transform.up, out hit, 100f))
         {
             blobShadow.SetActive(true);
-            blobShadow.transform.position = hit.point + Vector3.up * 0.05f;
+            blobShadow.transform.position = hit.point + transform.up * 0.05f;
             //blobShadow.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal );
         }
         else
         {
             blobShadow.SetActive(false);
-            blobShadow.transform.position = transform.position + Vector3.down * 3f;
+            blobShadow.transform.position = transform.position + -transform.up * 3f;
         }
     }
     private IEnumerator CoyoteTimer()
@@ -160,14 +159,22 @@ public class PlayerMovement : MonoBehaviour
         Vector3 forceOfGravity = (pointOfGravity - transform.position);
         return forceOfGravity;
     }
+    /* This method rotates the player so that its transform.up faces away from terrain, making it stand upright on the surface */
     private void SurfaceAlignment()
     {
-        RaycastHit hit = Physics.RaycastAll(transform.position, GetGravityVector(), GetGravityVector().magnitude)[0];
-        if (hit.collider != null)
-        {
-            Vector3 normal = hit.normal;
-            //float angle = Mathf.Atan2(normal.y, normal.x) * Mathf.Rad2Deg - 90f;
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(normal), Time.deltaTime * rotationSpeed);
-        }
+        Vector3 up = -GetGravityVector().normalized;
+        Vector3 forward = Vector3.ProjectOnPlane(transform.forward, GetGravityVector().normalized).normalized;
+
+        Quaternion targetRotation = Quaternion.LookRotation(forward, up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+    }
+    private IEnumerator Jump()
+    {
+        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        jumped = true;
+        recentlyJumped = true;
+        yield return new WaitForSecondsRealtime(0.5f);
+        recentlyJumped = false;
     }
 }
