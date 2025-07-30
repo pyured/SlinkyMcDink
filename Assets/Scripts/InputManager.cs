@@ -1,15 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
+    private PlayerInput playerInput;
+    private InputAction movementAction;
+    private InputAction cameraAction;
+
     public static Vector2 movementInput;
     public static Vector2 cameraInput;
     public static Dictionary<string, ButtonPress> buttonMap;
 
     void Start()
     {
+        playerInput = GetComponent<PlayerInput>();
+        movementAction = playerInput.actions["Movement"];
+        cameraAction = playerInput.actions["Camera"];
+
         movementInput = new Vector2();
         cameraInput = new Vector2();
         buttonMap = new Dictionary<string, ButtonPress>
@@ -21,15 +30,12 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        movementInput.x = Input.GetAxisRaw("Horizontal");
-        movementInput.y = Input.GetAxisRaw("Vertical");
-
-        cameraInput.x = Input.GetAxisRaw("HorizontalCam");
-        cameraInput.y = Input.GetAxisRaw("VerticalCam");
+        movementInput = movementAction.ReadValue<Vector2>();
+        cameraInput = cameraAction.ReadValue<Vector2>();
 
         foreach (string key in buttonMap.Keys)
         {
-            buttonMap[key].Update();
+            buttonMap[key].Update(playerInput);
         }
     }
 }
@@ -61,9 +67,9 @@ public class ButtonPress
 
     /** Updates the buttons attributes. Make sure to call each frame. */
 
-    public void Update()
+    public void Update(PlayerInput input)
     {
-        buttonActive = Input.GetButton(buttonName);
+        buttonActive = input.actions[buttonName].WasPerformedThisFrame();
 
         if (buttonActive)
         {
@@ -75,14 +81,14 @@ public class ButtonPress
             timeSinceLastPress += Time.deltaTime;
         }
 
-        buttonPressedThisFrame = Input.GetButtonDown(buttonName);
+        buttonPressedThisFrame = input.actions[buttonName].WasPressedThisFrame();
 
         if (buttonPressedThisFrame)
         {
             lengthOfPress = 0f;
         }
 
-        buttonReleasedThisFrame = Input.GetButtonUp(buttonName);
+        buttonReleasedThisFrame = input.actions[buttonName].WasReleasedThisFrame();
     }
 
     /** Returns whether the button is currently being pressed */
