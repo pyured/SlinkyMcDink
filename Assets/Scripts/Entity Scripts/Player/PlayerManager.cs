@@ -7,10 +7,19 @@ public class PlayerManager : Entity
 {
     #region Player Ability Stats
     [SerializeField] private float jumpForce;
+    [HideInInspector] public bool jumped;
     #endregion
-    #region Miscellaneous
+
+    #region Player Utilities
     [SerializeField] private float groundedRayHeight;
+    public float maxCoyoteTime;
+    [HideInInspector] public float coyoteTime;
     #endregion
+
+    #region Miscellaneous
+    [SerializeField] private GameObject blobShadowReference;
+    #endregion
+
     protected override void Start()
     {
         base.Start();
@@ -26,12 +35,51 @@ public class PlayerManager : Entity
         abilitiesBehavior = new PlayerAbilities(abilityMapping, this);
         stateManager.SetState("Walking");
     }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        if (IsGrounded())
+        {
+            coyoteTime = 0;
+            if (rb.velocity.y < 0)
+            {
+                jumped = false;
+            }
+        }
+        else
+        {
+            coyoteTime += Time.deltaTime;
+        }
+
+        UpdateBlobShadow();
+    }
+
     public float GetJumpForce()
     {
         return jumpForce;
     }
+
     public bool IsGrounded()
     {
         return Physics.Raycast(rb.transform.position, -transform.up, groundedRayHeight, LayerMask.GetMask("Ground"));
+    }
+
+    // TODO: Have this update to ground rotation
+    void UpdateBlobShadow()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, -transform.up, out hit, 100f))
+        {
+            blobShadowReference.SetActive(true);
+            blobShadowReference.transform.position = hit.point + transform.up * 0.05f;
+            //blobShadowReference.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal );
+        }
+        else
+        {
+            blobShadowReference.SetActive(false);
+            blobShadowReference.transform.position = transform.position + -transform.up * 3f;
+        }
     }
 }

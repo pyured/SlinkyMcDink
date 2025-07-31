@@ -33,14 +33,17 @@ public class Entity : MonoBehaviour
     [SerializeField] private float moveSpeed;
     private int health;
     #endregion
+
     #region Behaviors
     public IMovementBehavior movementBehavior;
     public AbilitiesBehavior abilitiesBehavior; //i made this an abstract class instead of an interface xd it just made a lil more sense
     #endregion
+
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
+
     protected virtual void Update()
     {
         if (currentGravity == GravityState.Tube)
@@ -50,11 +53,13 @@ public class Entity : MonoBehaviour
         }
         abilitiesBehavior?.UseAbilities(this);
     }
+
     protected virtual void FixedUpdate()
     {
         ApplyGravity();
         movementBehavior?.Move(this);
     }
+
     void ApplyGravity()
     {
         //UpdateGravityVector();
@@ -68,6 +73,7 @@ public class Entity : MonoBehaviour
                 break;
         }
     }
+
     /* This method updates the gravityDirection variable to point towards the line of gravity on the currentTerrain from where the entity is currently */
     private void UpdateGravityVector()
     {
@@ -78,6 +84,7 @@ public class Entity : MonoBehaviour
         Vector3 forceOfGravity = (pointOfGravity - transform.position);
         gravityDirection = forceOfGravity;
     }
+
     /* Aligns the transform of an entity to be standing upright in terms of the gravityDirection vector. (gravity points down irl, and you stand upwards)*/
     private void SurfaceAlignment()
     {
@@ -88,19 +95,23 @@ public class Entity : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(forward, up);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
     }
+
     #region Getters
     public float MoveSpeed()
     {
         return moveSpeed;
     }
+
     public GravityState GetGravityState()
     {
         return currentGravity;
     }
+
     public GameObject GetCurrentTerrain()
     {
         return currentTerrain;
     }
+    
     public Vector3 GetGravityDirection()
     {
         return gravityDirection;
