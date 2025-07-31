@@ -104,7 +104,12 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.DrawRay(transform.position, -transform.up * groundedRayHeight);
         if (tubeGravity)
         {
-            Gizmos.DrawRay(transform.position, GetGravityVector());
+
+            //Gizmos.DrawRay(transform.position, GetGravityVector());
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(transform.position, transform.up * 5);
+            Gizmos.DrawRay(transform.position, transform.forward * 5);
+            Gizmos.DrawRay(transform.position, transform.right * 5);
         }
 
     }
@@ -163,7 +168,8 @@ public class PlayerMovement : MonoBehaviour
     private void SurfaceAlignment()
     {
         Vector3 up = -GetGravityVector().normalized;
-        Vector3 forward = Vector3.ProjectOnPlane(transform.forward, GetGravityVector().normalized).normalized;
+        //Vector3 forward = Vector3.ProjectOnPlane(transform.forward, GetGravityVector().normalized).normalized;
+        Vector3 forward = currentTerrain.GetComponent<MainTerrain>().lineOfGravity.normalized;
 
         Quaternion targetRotation = Quaternion.LookRotation(forward, up);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
