@@ -1,0 +1,123 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class InputManager : MonoBehaviour
+{
+    private PlayerInput playerInput;
+    private InputAction movementAction;
+    private InputAction cameraAction;
+
+    public static Vector2 movementInput;
+    public static Vector2 cameraInput;
+    public static Dictionary<string, ButtonPress> buttonMap;
+
+    void Start()
+    {
+        playerInput = GetComponent<PlayerInput>();
+        movementAction = playerInput.actions["Movement"];
+        cameraAction = playerInput.actions["Camera"];
+
+        movementInput = new Vector2();
+        cameraInput = new Vector2();
+        buttonMap = new Dictionary<string, ButtonPress>
+        {
+            {"Jump", new ButtonPress("Jump")},
+            {"Roll", new ButtonPress("Roll")}
+        };
+    }
+
+    void Update()
+    {
+        movementInput = movementAction.ReadValue<Vector2>();
+        cameraInput = cameraAction.ReadValue<Vector2>();
+
+        foreach (string key in buttonMap.Keys)
+        {
+            buttonMap[key].Update(playerInput);
+        }
+    }
+}
+
+/** Object representing a button press */
+public class ButtonPress
+{
+    /** Name of the button according to the Input Manager */
+    private string buttonName;
+    /** Whether the button is currently being pressed */
+    private bool buttonActive;
+    /** Whether the button was pressed this frame */
+    private bool buttonPressedThisFrame;
+    /** Whether the button was released this frame */
+    private bool buttonReleasedThisFrame;
+    /** The length that the button was held, in seconds */
+    private float lengthOfPress;
+    /** The time since the button was last released, in seconds */
+    private float timeSinceLastPress;
+
+    /**
+    Creates a button press object
+    @param buttonName   The name of the button this object represents
+    */
+    public ButtonPress(string buttonName)
+    {
+        this.buttonName = buttonName;
+    }
+
+    /** Updates the buttons attributes. Make sure to call each frame. */
+
+    public void Update(PlayerInput input)
+    {
+        buttonActive = input.actions[buttonName].WasPerformedThisFrame();
+
+        if (buttonActive)
+        {
+            lengthOfPress += Time.deltaTime;
+            timeSinceLastPress = 0;
+        }
+        else
+        {
+            timeSinceLastPress += Time.deltaTime;
+        }
+
+        buttonPressedThisFrame = input.actions[buttonName].WasPressedThisFrame();
+
+        if (buttonPressedThisFrame)
+        {
+            lengthOfPress = 0f;
+        }
+
+        buttonReleasedThisFrame = input.actions[buttonName].WasReleasedThisFrame();
+    }
+
+    /** Returns whether the button is currently being pressed */
+    public bool Active()
+    {
+        return buttonActive;
+    }
+
+    /** Returns whether the button was pressed this frame */
+    public bool PressedThisFrame()
+    {
+        return buttonPressedThisFrame;
+    }
+
+    /** Returns whether the button was released this frame */
+    public bool ReleasedThisFrame()
+    {
+        return buttonReleasedThisFrame;
+    }
+
+    /** Returns how long the button was last pressed. Resets every new button press */
+    public float GetLengthOfPress()
+    {
+        return lengthOfPress;
+    }
+
+    /** Returns how long its been since the button was last released. Resets every new button press */
+    public float GetTimeSinceLastPress()
+    {
+        return timeSinceLastPress;
+    }
+}
