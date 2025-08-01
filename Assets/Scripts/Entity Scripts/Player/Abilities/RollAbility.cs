@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// will comment later
 public class RollAbility : IAbility
 {
     private PlayerManager playerManager;
@@ -21,7 +22,15 @@ public class RollAbility : IAbility
         if (playerManager.stateManager.GetCurrentState() == "Walking" && directionalSpeed >= rollThreshold)
         {
             playerManager.stateManager.SetState("Rolling");
-            entity.transform.rotation = Quaternion.Euler(0, 0, -90);
+            playerManager.rollSpeed = directionalSpeed;
+            float angle = Mathf.Atan2(rb.velocity.x, rb.velocity.z) * Mathf.Rad2Deg;
+            playerManager.model.transform.rotation = Quaternion.Euler(0, 0, -90);
+            entity.transform.rotation = Quaternion.Euler(0, angle, 0);
+            entity.GetComponent<CapsuleCollider>().direction = 0;
+        }
+        else if (playerManager.stateManager.GetCurrentState() == "Rolling")
+        {
+            playerManager.StopRolling();
         }
     }
 }

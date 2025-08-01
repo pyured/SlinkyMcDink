@@ -5,6 +5,7 @@ using UnityEngine;
 public class NewPlayerMovement : IMovementBehavior
 {
     private PlayerManager playerManager;
+    private float walkThreshold = 0.3f;
     public NewPlayerMovement(PlayerManager p)
     {
         playerManager = p;
@@ -49,6 +50,12 @@ public class NewPlayerMovement : IMovementBehavior
 
     void RollingMovement(Entity entity)
     {
-        
+        entity.transform.rotation = Quaternion.Euler(0, entity.transform.eulerAngles.y + playerManager.turnSpeed * InputManager.movementInput.x, 0);
+        playerManager.rollSpeed += InputManager.movementInput.y * playerManager.rollAcceleration;
+        if (playerManager.rollSpeed < walkThreshold)
+        {
+            playerManager.StopRolling();
+        }
+        entity.rb.velocity = entity.transform.forward * playerManager.rollSpeed + Vector3.Project(entity.rb.velocity, Vector3.down);
     }
 }
