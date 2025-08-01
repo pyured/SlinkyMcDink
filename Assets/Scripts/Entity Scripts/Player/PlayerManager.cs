@@ -17,7 +17,7 @@ public class PlayerManager : Entity
     #endregion
 
     #region Miscellaneous
-    [SerializeField] private GameObject blobShadowReference;
+    public GameObject blobShadowReference;
     #endregion
 
     protected override void Start()
@@ -29,8 +29,13 @@ public class PlayerManager : Entity
             "Rolling"
         });
 
-        Dictionary<string, IAbility> abilityMapping = new(); //making a dictionary with every ability and its button, and then passing it to player abilities
-        abilityMapping.Add("Jump", new JumpAbility(this));
+        Dictionary<string, IAbility> abilityMapping = new()
+        {
+            { "Jump", new JumpAbility(this) },
+            { "Roll", new RollAbility(this) }
+        }; //making a dictionary with every ability and its button, and then passing it to player abilities
+
+        transform.rotation = Quaternion.Euler(0, 0, 0);
 
         abilitiesBehavior = new PlayerAbilities(abilityMapping, this);
         stateManager.SetState("Walking");
@@ -52,6 +57,8 @@ public class PlayerManager : Entity
         {
             coyoteTime += Time.deltaTime;
         }
+
+        Debug.Log(stateManager.GetCurrentState());
 
         UpdateBlobShadow();
     }

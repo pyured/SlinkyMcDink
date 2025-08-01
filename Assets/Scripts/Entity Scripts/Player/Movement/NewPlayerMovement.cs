@@ -11,7 +11,14 @@ public class NewPlayerMovement : IMovementBehavior
     }
     public void Move(Entity entity)
     {
-        WalkingMovement(entity);
+        if (playerManager.stateManager.GetCurrentState() == "Walking")
+        {
+            WalkingMovement(entity);
+        }
+        else
+        {
+            RollingMovement(entity);
+        }
     }
     void WalkingMovement(Entity entity)
     {
@@ -34,5 +41,10 @@ public class NewPlayerMovement : IMovementBehavior
                 rb.velocity = moveDir * moveSpeed + Vector3.Project(rb.velocity, playerManager.GetGravityDirection());
                 break;
         }
+    }
+
+    void RollingMovement(Entity entity)
+    {
+        
     }
 }
