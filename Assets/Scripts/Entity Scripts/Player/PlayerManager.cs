@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -17,7 +18,8 @@ public class PlayerManager : Entity
     #endregion
 
     #region Miscellaneous
-    public GameObject blobShadowReference;
+    [SerializeField] private GameObject blobShadowReference;
+    [SerializeField] private CinemachineBrain cameraBrain;
     #endregion
 
     protected override void Start()
@@ -61,6 +63,7 @@ public class PlayerManager : Entity
         Debug.Log(stateManager.GetCurrentState());
 
         UpdateBlobShadow();
+        Debug.DrawRay(transform.position, GetCameraVector()[0]);
     }
 
     public float GetJumpForce()
@@ -88,5 +91,12 @@ public class PlayerManager : Entity
             blobShadowReference.SetActive(false);
             blobShadowReference.transform.position = transform.position + -transform.up * 3f;
         }
+    }
+    public Vector3[] GetCameraVector() //what direction our camera for player is facing, 0 is the forward vector of camera and 1 is the vector facing the right
+    {
+        return new Vector3[] {
+            Vector3.ProjectOnPlane(Camera.main.transform.forward, Vector3.up).normalized,
+            Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up).normalized,
+        };
     }
 }

@@ -30,7 +30,11 @@ public class NewPlayerMovement : IMovementBehavior
         //how can i simplify tube movement to translate regular movement?
         {
             case Entity.GravityState.Regular:
-                rb.velocity = new Vector3(InputManager.movementInput.x * moveSpeed, rb.velocity.y, InputManager.movementInput.y * moveSpeed);
+                var forwardVelocity = InputManager.movementInput.y * playerManager.GetCameraVector()[0]; //0 is camera foreward
+                var tangentVelocity = InputManager.movementInput.x * playerManager.GetCameraVector()[1]; //1 is camera right
+                //rb.velocity = new Vector3(InputManager.movementInput.x * moveSpeed, rb.velocity.y, InputManager.movementInput.y * moveSpeed);
+                //add forward and side velocitys, and preserve vertical velocity with the project method
+                rb.velocity = (forwardVelocity + tangentVelocity).normalized * moveSpeed + Vector3.Project(rb.velocity, Vector3.down);
                 break;
             case Entity.GravityState.Tube:
                 MainTerrain mainTerrain = playerManager.GetCurrentTerrain().GetComponent<MainTerrain>();
