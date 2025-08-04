@@ -9,6 +9,10 @@ public class PlayerManager : Entity
     #region Player Ability Stats
     [SerializeField] private float jumpForce;
     [HideInInspector] public bool jumped;
+    [HideInInspector] public float rollSpeed;
+    public float turnSpeed;
+    public float rollDampener;
+    public float rollAcceleration;
     #endregion
 
     #region Player Utilities
@@ -20,6 +24,7 @@ public class PlayerManager : Entity
     #region Miscellaneous
     [SerializeField] private GameObject blobShadowReference;
     [SerializeField] private CinemachineBrain cameraBrain;
+    public GameObject model;
     #endregion
 
     protected override void Start()
@@ -31,8 +36,13 @@ public class PlayerManager : Entity
             "Rolling"
         });
 
-        Dictionary<string, IAbility> abilityMapping = new(); //making a dictionary with every ability and its button, and then passing it to player abilities
-        abilityMapping.Add("Jump", new JumpAbility(this));
+        Dictionary<string, IAbility> abilityMapping = new()
+        {
+            { "Jump", new JumpAbility(this) },
+            { "Roll", new RollAbility(this) }
+        }; //making a dictionary with every ability and its button, and then passing it to player abilities
+
+        model.transform.rotation = Quaternion.Euler(0, 0, 0);
 
         abilitiesBehavior = new PlayerAbilities(abilityMapping, this);
         stateManager.SetState("Walking");
@@ -54,6 +64,8 @@ public class PlayerManager : Entity
         {
             coyoteTime += Time.deltaTime;
         }
+
+        //Debug.Log(stateManager.GetCurrentState());
 
         UpdateBlobShadow();
         Debug.DrawRay(transform.position, GetCameraVector()[0]);
@@ -91,5 +103,13 @@ public class PlayerManager : Entity
             Vector3.ProjectOnPlane(Camera.main.transform.forward, Vector3.up).normalized,
             Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up).normalized,
         };
+    }
+
+    public void StopRolling()
+    {
+        Debug.Log("they see me walkin");
+        stateManager.SetState("Walking");
+        model.transform.rotation = Quaternion.Euler(0, 0, 0);
+        //model.GetComponent<CapsuleCollider>().direction = 1;
     }
 }

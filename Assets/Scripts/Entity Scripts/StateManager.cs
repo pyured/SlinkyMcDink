@@ -15,7 +15,12 @@ public class StateManager //all this for fucking enums
     public bool SetState(string s)
     {
         int index = states.FindIndex(state => state == s);
-        return index != -1;
+        if (index != -1)
+        {
+            stateIndex = index;
+            return true;
+        }
+        return false;
     }
     public string GetCurrentState()
     {

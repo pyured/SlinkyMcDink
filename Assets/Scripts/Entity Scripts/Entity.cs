@@ -11,7 +11,7 @@ public class Entity : MonoBehaviour
     #region Entity Physics
     /* It is important that the rigidbody component on an entity has interpolatation setting turned to interpolate, and that gravity is disabled since we're
     using our own */
-    public Rigidbody rb;
+    [HideInInspector] public Rigidbody rb;
     /* Strength of gravity uh DUH */
     [SerializeField] private float gravityStrength;
     /* Current gravity will be one of these enum values and change how gravity is applied to an entity */

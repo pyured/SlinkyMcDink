@@ -5,13 +5,21 @@ using UnityEngine;
 public class NewPlayerMovement : IMovementBehavior
 {
     private PlayerManager playerManager;
+    private float walkThreshold = 0.3f;
     public NewPlayerMovement(PlayerManager p)
     {
         playerManager = p;
     }
     public void Move(Entity entity)
     {
-        WalkingMovement(entity);
+        if (playerManager.stateManager.GetCurrentState() == "Walking")
+        {
+            WalkingMovement(entity);
+        }
+        else
+        {
+            RollingMovement(entity);
+        }
     }
     void WalkingMovement(Entity entity)
     {
@@ -38,5 +46,16 @@ public class NewPlayerMovement : IMovementBehavior
                 rb.velocity = moveDir * moveSpeed + Vector3.Project(rb.velocity, playerManager.GetGravityDirection());
                 break;
         }
+    }
+
+    void RollingMovement(Entity entity)
+    {
+        playerManager.model.transform.rotation = Quaternion.Euler(0, entity.transform.eulerAngles.y + playerManager.turnSpeed * InputManager.movementInput.x, 0);
+        playerManager.rollSpeed += InputManager.movementInput.y * playerManager.rollAcceleration;
+        if (playerManager.rollSpeed < walkThreshold)
+        {
+            playerManager.StopRolling();
+        }
+        entity.rb.velocity = entity.transform.forward * playerManager.rollSpeed + Vector3.Project(entity.rb.velocity, Vector3.down);
     }
 }
