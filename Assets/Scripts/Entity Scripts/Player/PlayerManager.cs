@@ -107,9 +107,9 @@ public class PlayerManager : Entity
 
     public void StopRolling()
     {
+        Debug.Log("they see me walkin");
         stateManager.SetState("Walking");
         model.transform.rotation = Quaternion.Euler(0, 0, 0);
-        transform.rotation = Quaternion.Euler(0, 0, 0);
-        GetComponent<CapsuleCollider>().direction = 1;
+        //model.GetComponent<CapsuleCollider>().direction = 1;
     }
 }

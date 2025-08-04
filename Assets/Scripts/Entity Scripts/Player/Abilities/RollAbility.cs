@@ -24,9 +24,7 @@ public class RollAbility : IAbility
             playerManager.stateManager.SetState("Rolling");
             playerManager.rollSpeed = directionalSpeed;
             float angle = Mathf.Atan2(rb.velocity.x, rb.velocity.z) * Mathf.Rad2Deg;
-            playerManager.model.transform.rotation = Quaternion.Euler(0, 0, -90);
-            entity.transform.rotation = Quaternion.Euler(0, angle, 0);
-            entity.GetComponent<CapsuleCollider>().direction = 0;
+            playerManager.model.transform.rotation = Quaternion.Euler(0, angle, -90);
         }
         else if (playerManager.stateManager.GetCurrentState() == "Rolling")
         {

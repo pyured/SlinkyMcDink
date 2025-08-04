@@ -50,7 +50,7 @@ public class NewPlayerMovement : IMovementBehavior
 
     void RollingMovement(Entity entity)
     {
-        entity.transform.rotation = Quaternion.Euler(0, entity.transform.eulerAngles.y + playerManager.turnSpeed * InputManager.movementInput.x, 0);
+        playerManager.model.transform.rotation = Quaternion.Euler(0, entity.transform.eulerAngles.y + playerManager.turnSpeed * InputManager.movementInput.x, 0);
         playerManager.rollSpeed += InputManager.movementInput.y * playerManager.rollAcceleration;
         if (playerManager.rollSpeed < walkThreshold)
         {

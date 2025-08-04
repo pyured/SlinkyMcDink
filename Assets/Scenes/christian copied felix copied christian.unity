@@ -1504,9 +1504,10 @@ GameObject:
   - component: {fileID: 1598708384}
   - component: {fileID: 1598708386}
   - component: {fileID: 1598708385}
+  - component: {fileID: 1598708387}
   m_Layer: 0
   m_Name: Model
-  m_TagString: Untagged
+  m_TagString: Model
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1576,6 +1577,29 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1598708383}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!136 &1598708387
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1598708383}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1731961014
 GameObject:
   m_ObjectHideFlags: 0
@@ -2757,29 +2781,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7762264965022903452}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!136 &6380339303201385507
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6425031196771204214}
-  m_Material: {fileID: 13400000, guid: b804e7d7cc715714195c81750a81345c, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6425031196771204214
 GameObject:
   m_ObjectHideFlags: 0
@@ -2789,7 +2790,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7762264965022903452}
-  - component: {fileID: 6380339303201385507}
   - component: {fileID: 7344619041045877331}
   - component: {fileID: 2968945367648692571}
   m_Layer: 0
