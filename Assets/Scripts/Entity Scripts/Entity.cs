@@ -86,8 +86,9 @@ public class Entity : MonoBehaviour
     }
 
     /* Aligns the transform of an entity to be standing upright in terms of the gravityDirection vector. (gravity points down irl, and you stand upwards)*/
-    private void SurfaceAlignment()
+    protected virtual void SurfaceAlignment()
     {
+        Debug.Log("surface movement :()");
         Vector3 up = -gravityDirection.normalized;
         //Vector3 forward = Vector3.ProjectOnPlane(transform.forward, GetGravityVector().normalized).normalized;
         Vector3 forward = currentTerrain.GetComponent<MainTerrain>().lineOfGravity.normalized;

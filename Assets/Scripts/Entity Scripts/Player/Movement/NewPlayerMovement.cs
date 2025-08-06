@@ -46,6 +46,8 @@ public class NewPlayerMovement : IMovementBehavior
                 rb.velocity = moveDir * moveSpeed + Vector3.Project(rb.velocity, playerManager.GetGravityDirection());
                 break;
         }
+        Vector3 movingDirection = new Vector3(rb.velocity.x, 0, rb.velocity.z).normalized;
+        if (InputManager.movementInput != Vector2.zero) playerManager.UpdateFacingRotation(movingDirection);
     }
 
     void RollingMovement(Entity entity)
@@ -58,4 +60,5 @@ public class NewPlayerMovement : IMovementBehavior
         }
         entity.rb.velocity = playerManager.model.transform.forward * playerManager.rollSpeed + Vector3.Project(entity.rb.velocity, Vector3.down);
     }
+    
 }

@@ -11,7 +11,6 @@ public class JumpAbility : IAbility
     }
     public void Execute(Entity entity)
     {
-        Debug.Log("jump executed");
         if (playerManager.IsGrounded() || (playerManager.coyoteTime <= playerManager.maxCoyoteTime && !playerManager.jumped))
         {
             Rigidbody rb = entity.rb;

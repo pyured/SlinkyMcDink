@@ -112,4 +112,10 @@ public class PlayerManager : Entity
         model.transform.rotation = Quaternion.Euler(0, 0, 0);
         //model.GetComponent<CapsuleCollider>().direction = 1;
     }
+    public void UpdateFacingRotation(Vector3 direction)
+    {
+        Quaternion target = Quaternion.LookRotation(direction, transform.up);
+        float rotationSpeed = 5f;
+        model.transform.rotation = Quaternion.Slerp(model.transform.rotation, target, Time.deltaTime * rotationSpeed);
+    }
 }
