@@ -48,7 +48,7 @@ public class PlayerManager : Entity
         stateManager.SetState("Walking");
     }
 
-    protected override void Update()
+    protected override void Update() //uwuwuu update
     {
         base.Update();
 
@@ -112,10 +112,22 @@ public class PlayerManager : Entity
         model.transform.rotation = Quaternion.Euler(0, 0, 0);
         //model.GetComponent<CapsuleCollider>().direction = 1;
     }
-    public void UpdateFacingRotation(Vector3 direction)
+    public void UpdateFacingRotation(Vector3 direction) //this really only works with regular vector3.down gravity
     {
-        Quaternion target = Quaternion.LookRotation(direction, transform.up);
+        Quaternion target;
         float rotationSpeed = 5f;
-        model.transform.rotation = Quaternion.Slerp(model.transform.rotation, target, Time.deltaTime * rotationSpeed);
+        switch (GetGravityState())
+        {
+            case GravityState.Regular:
+                target = Quaternion.LookRotation(direction, transform.up);
+                model.transform.rotation = Quaternion.Slerp(model.transform.rotation, target, Time.deltaTime * rotationSpeed);
+                break;
+            case GravityState.Tube:
+                Vector3 moveDir = Vector3.ProjectOnPlane(transform.forward, transform.up).normalized * InputManager.movementInput.y
+                + Vector3.ProjectOnPlane(transform.right, transform.up).normalized * InputManager.movementInput.x;
+                target = Quaternion.LookRotation(moveDir, transform.up);
+                model.transform.rotation = Quaternion.Slerp(model.transform.rotation, target, Time.deltaTime * rotationSpeed);
+                break;
+        }
     }
 }
